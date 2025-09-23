@@ -1,0 +1,99 @@
+require("@nomicfoundation/hardhat-toolbox");
+
+const ETHERESCAN_API_KEY = "etherescan api key"
+const INFURA_API_KEY = "infura api key"
+const ACCOUNT_PRIVATE_KEY = "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80";
+
+const LOW_OPTIMIZER_COMPILER_SETTINGS = {
+  version: '0.8.18',
+  settings: {
+    optimizer: { enabled: true, runs: 2_000 },
+    metadata: { bytecodeHash: 'none' }
+  }
+}
+
+const LOWEST_OPTIMIZER_COMPILER_SETTINGS = {
+  version: '0.8.18',
+  settings: {
+    viaIR: true,
+    optimizer: { enabled: true, runs: 1_000 },
+    metadata: { bytecodeHash: 'none' }
+  }
+}
+
+const DEFAULT_COMPILER_SETTINGS = {
+  version: '0.8.18',
+  settings: {
+    optimizer: { enabled: true, runs: 625 },
+    metadata: { bytecodeHash: 'none' }
+  }
+}
+
+/** @type import('hardhat/config').HardhatUserConfig */
+module.exports = {
+  networks: {
+    hardhat: {
+      allowUnlimitedContractSize: false
+    },
+    mainnet: {
+      url: `https://mainnet.infura.io/v3/${INFURA_API_KEY}`
+    },
+    ropsten: {
+      url: `https://ropsten.infura.io/v3/${INFURA_API_KEY}`
+    },
+    rinkeby: {
+      url: `https://rinkeby.infura.io/v3/${INFURA_API_KEY}`
+    },
+    goerli: {
+      url: `https://goerli.infura.io/v3/${INFURA_API_KEY}`,
+      chainId: 5,
+      allowUnlimitedContractSize: true,
+      accounts: [ACCOUNT_PRIVATE_KEY]
+    },
+    kovan: {
+      url: `https://kovan.infura.io/v3/${INFURA_API_KEY}`
+    },
+    arbitrumRinkeby: {
+      url: `https://arbitrum-rinkeby.infura.io/v3/${INFURA_API_KEY}`
+    },
+    arbitrum: {
+      url: `https://arbitrum-mainnet.infura.io/v3/${INFURA_API_KEY}`
+    },
+    optimismKovan: {
+      url: `https://optimism-kovan.infura.io/v3/${INFURA_API_KEY}`
+    },
+    optimism: {
+      url: `https://optimism-mainnet.infura.io/v3/${INFURA_API_KEY}`
+    },
+    mumbai: {
+      url: `https://polygon-mumbai.infura.io/v3/${INFURA_API_KEY}`
+    },
+    polygon: {
+      url: `https://polygon-mainnet.infura.io/v3/${INFURA_API_KEY}`
+    },
+    bnb: {
+      url: `https://bsc-dataseed.binance.org/`
+    }
+  },
+  etherscan: {
+    // Your API key for Etherscan
+    // Obtain one at https://etherscan.io/
+    apiKey:ETHERESCAN_API_KEY
+  },
+  solidity: {
+    compilers: [ DEFAULT_COMPILER_SETTINGS ],
+    overrides: {
+      'contracts/periphery/NonfungiblePositionManager.sol': LOW_OPTIMIZER_COMPILER_SETTINGS,
+      'contracts/periphery/NonfungibleTokenPositionDescriptor.sol': LOWEST_OPTIMIZER_COMPILER_SETTINGS,
+      'contracts/periphery/libraries/NFTDescriptor.sol': LOWEST_OPTIMIZER_COMPILER_SETTINGS,
+      'contracts/periphery/libraries/NFTSVG.sol': LOWEST_OPTIMIZER_COMPILER_SETTINGS,
+    }
+  },
+  watcher: {
+    test: {
+      tasks: [{ command: 'test', params: { testFiles: ['{path}'] } }],
+      files: ['./test/**/*'],
+      verbose: true
+    }
+  }
+};
